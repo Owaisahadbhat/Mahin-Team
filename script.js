@@ -239,7 +239,16 @@ document.querySelectorAll('.proj-card').forEach(card => {
   card.addEventListener('click', () => {
     const idx = parseInt(card.getAttribute('data-project'));
     const p = projectData[idx];
-    const stars = '★'.repeat(p.feedback.stars);
+    if (!p) return;
+    const starRatings = [4.5, 4, 4, 4.5, 3.5, 4];
+    const rating = starRatings[idx] || 4;
+    const fullS = Math.floor(rating);
+    const halfS = rating % 1 >= 0.5;
+    const emptyS = 5 - fullS - (halfS ? 1 : 0);
+    let stars = '';
+    for(let i=0;i<fullS;i++) stars += '<i class="fa-solid fa-star" style="color:#f59e0b;font-size:16px;margin-right:2px;"></i>';
+    if(halfS) stars += '<i class="fa-solid fa-star-half-stroke" style="color:#f59e0b;font-size:16px;margin-right:2px;"></i>';
+    for(let i=0;i<emptyS;i++) stars += '<i class="fa-regular fa-star" style="color:#d1d5db;font-size:16px;margin-right:2px;"></i>';
     modalContent.innerHTML = `
       <div class="modal-img" style="background:${p.gradient}">
         <i class="fa-solid ${p.icon}"></i>
