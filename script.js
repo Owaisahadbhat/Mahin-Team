@@ -428,3 +428,83 @@ window.addEventListener('scroll', () => {
     a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--accent)' : '';
   });
 }, { passive: true });
+
+
+/* ── Client Feedback Form ── */
+let selectedRating = 0;
+
+const stars = document.querySelectorAll('.star-pick');
+stars.forEach(star => {
+  star.addEventListener('mouseover', () => {
+    const val = parseInt(star.getAttribute('data-val'));
+    stars.forEach(s => {
+      const sv = parseInt(s.getAttribute('data-val'));
+      s.className = sv <= val ? 'fa-solid fa-star star-pick active' : 'fa-regular fa-star star-pick';
+    });
+  });
+  star.addEventListener('mouseleave', () => {
+    stars.forEach(s => {
+      const sv = parseInt(s.getAttribute('data-val'));
+      s.className = sv <= selectedRating ? 'fa-solid fa-star star-pick active' : 'fa-regular fa-star star-pick';
+    });
+  });
+  star.addEventListener('click', () => {
+    selectedRating = parseInt(star.getAttribute('data-val'));
+    document.getElementById('fb_rating').value = selectedRating;
+    stars.forEach(s => {
+      const sv = parseInt(s.getAttribute('data-val'));
+      s.className = sv <= selectedRating ? 'fa-solid fa-star star-pick active' : 'fa-regular fa-star star-pick';
+    });
+  });
+});
+
+document.getElementById('submitFeedback').addEventListener('click', () => {
+  const name = document.getElementById('fb_name').value.trim();
+  const role = document.getElementById('fb_role').value.trim();
+  const message = document.getElementById('fb_message').value.trim();
+  const rating = document.getElementById('fb_rating').value;
+  const status = document.getElementById('fbStatus');
+  const btnText = document.getElementById('fbBtnText');
+
+  if (!name || !role || !message) {
+    status.style.display = 'block';
+    status.style.color = '#ef4444';
+    status.textContent = '⚠️ Please fill in all fields.';
+    return;
+  }
+  if (rating === '0') {
+    status.style.display = 'block';
+    status.style.color = '#ef4444';
+    status.textContent = '⚠️ Please select a star rating.';
+    return;
+  }
+
+  btnText.textContent = 'Sending...';
+  document.getElementById('submitFeedback').disabled = true;
+
+  emailjs.send('service_yxer656', 'template_x9fgx7g', {
+    from_name: name,
+    from_role: role,
+    message: message,
+    rating: rating
+  }).then(() => {
+    status.style.display = 'block';
+    status.style.color = '#10b981';
+    status.textContent = '✅ Thank you! Your review has been submitted successfully.';
+    btnText.textContent = 'Submit Review';
+    document.getElementById('submitFeedback').disabled = false;
+    document.getElementById('fb_name').value = '';
+    document.getElementById('fb_role').value = '';
+    document.getElementById('fb_message').value = '';
+    document.getElementById('fb_rating').value = '0';
+    selectedRating = 0;
+    stars.forEach(s => s.className = 'fa-regular fa-star star-pick');
+  }).catch((err) => {
+    status.style.display = 'block';
+    status.style.color = '#ef4444';
+    status.textContent = '❌ Something went wrong. Please try again.';
+    btnText.textContent = 'Submit Review';
+    document.getElementById('submitFeedback').disabled = false;
+    console.error('EmailJS error:', err);
+  });
+});
