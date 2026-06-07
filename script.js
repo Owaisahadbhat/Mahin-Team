@@ -329,9 +329,18 @@ const testimonials = [
 /* ── Build Testimonial Marquees ── */
 function buildTestiCard(t) {
   const fullStars = Math.floor(t.stars);
-  const halfStar = t.stars % 1 >= 0.5 ? '½' : '';
-  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  const stars = '★'.repeat(fullStars) + (halfStar ? '⯨' : '') + '☆'.repeat(emptyStars);
+  const hasHalf = t.stars % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+  let starsHtml = '';
+  for (let i = 0; i < fullStars; i++) {
+    starsHtml += '<i class="fa-solid fa-star" style="color:#f59e0b;font-size:15px;margin-right:2px;"></i>';
+  }
+  if (hasHalf) {
+    starsHtml += '<i class="fa-solid fa-star-half-stroke" style="color:#f59e0b;font-size:15px;margin-right:2px;"></i>';
+  }
+  for (let i = 0; i < emptyStars; i++) {
+    starsHtml += '<i class="fa-regular fa-star" style="color:#d1d5db;font-size:15px;margin-right:2px;"></i>';
+  }
   return `
     <div class="testi-card">
       <div class="testi-header">
@@ -341,7 +350,7 @@ function buildTestiCard(t) {
           <small>${t.role} · ${t.country}</small>
         </div>
       </div>
-      <div class="testi-stars">${stars}</div>
+      <div class="testi-stars" style="margin:8px 0 6px;">${starsHtml}</div>
       <p class="testi-text"><span class="testi-quote">"</span>${t.text}"</p>
     </div>
   `;
