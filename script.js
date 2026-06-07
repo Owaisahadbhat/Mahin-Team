@@ -482,31 +482,37 @@ document.getElementById('submitFeedback').addEventListener('click', () => {
   btnText.textContent = 'Sending...';
   document.getElementById('submitFeedback').disabled = true;
 
-  emailjs.send('service_yxer656', 'template_x9fgx7g', {
-    from_name: name,
-    from_role: role,
-    message: message,
-    rating: rating,
-    to_email: 'mahinandteam@gmail.com',
-    reply_to: 'mahinandteam@gmail.com'
-  }).then(() => {
-    status.style.display = 'block';
-    status.style.color = '#10b981';
-    status.textContent = '✅ Thank you! Your review has been submitted successfully.';
-    btnText.textContent = 'Submit Review';
-    document.getElementById('submitFeedback').disabled = false;
-    document.getElementById('fb_name').value = '';
-    document.getElementById('fb_role').value = '';
-    document.getElementById('fb_message').value = '';
-    document.getElementById('fb_rating').value = '0';
-    selectedRating = 0;
-    stars.forEach(s => s.className = 'fa-regular fa-star star-pick');
+  fetch('https://formspree.io/f/mwvjldke', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      name: name,
+      role: role,
+      message: message,
+      rating: rating + ' stars'
+    })
+  }).then(res => {
+    if (res.ok) {
+      status.style.display = 'block';
+      status.style.color = '#10b981';
+      status.textContent = '✅ Thank you! Your review has been submitted successfully.';
+      btnText.textContent = 'Submit Review';
+      document.getElementById('submitFeedback').disabled = false;
+      document.getElementById('fb_name').value = '';
+      document.getElementById('fb_role').value = '';
+      document.getElementById('fb_message').value = '';
+      document.getElementById('fb_rating').value = '0';
+      selectedRating = 0;
+      stars.forEach(s => s.className = 'fa-regular fa-star star-pick');
+    } else {
+      throw new Error('Server error');
+    }
   }).catch((err) => {
     status.style.display = 'block';
     status.style.color = '#ef4444';
     status.textContent = '❌ Something went wrong. Please try again.';
     btnText.textContent = 'Submit Review';
     document.getElementById('submitFeedback').disabled = false;
-    console.error('EmailJS error:', err);
+    console.error('Formspree error:', err);
   });
 });
