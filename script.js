@@ -486,7 +486,9 @@ document.getElementById('submitFeedback').addEventListener('click', () => {
     from_name: name,
     from_role: role,
     message: message,
-    rating: rating
+    rating: rating,
+    to_email: 'mahinandteam@gmail.com',
+    reply_to: 'mahinandteam@gmail.com'
   }).then(() => {
     status.style.display = 'block';
     status.style.color = '#10b981';
